@@ -1,0 +1,30 @@
+service: automated-defence
+
+stage: dev
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  region: ${file(./config.js):getRegion}
+  iamRoleStatements:
+    $ref: ./iamRoleStatements.json
+
+functions:
+  blockip:
+    handler: handler.blockip
+    events:
+     - http:
+         path: blockip
+         method: get
+         
+  handleexpiry:
+    handler: handler.handleexpiry
+    events:
+     - schedule: rate(1 minute)
+
+  actionhistory:
+    handler: handler.actionhistory
+    events:
+     - http:
+         path: actionhistory
+         method: get
